@@ -4,11 +4,15 @@ import sun.jvm.hotspot.runtime.StaticBaseConstructor;
 
 public class MoodAnalyser {
 
-    public static String analyseMood(String message)
-    {
-        if(message.contains("sad"))
-            return "SAD";
-        else
-            return  "Happy";
+    public static String analyseMood(String message) {
+        try {
+            if (message.contains("sad"))
+                return "SAD";
+            else
+                return "Happy";
+        } catch (Exception e) {
+            return "Happy";
+        }
+
     }
 }

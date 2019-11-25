@@ -21,5 +21,12 @@ public class Dummytesting{
         Assert.assertEquals("Happy",mood);
 
     }
+    @Test
 
+    public void giveHappyWhenNull() {
+        MoodAnalyser moodanalyse = new MoodAnalyser();
+        String mood=moodanalyse.analyseMood(null);
+        Assert.assertEquals("Happy",mood);
+
+    }
 }
