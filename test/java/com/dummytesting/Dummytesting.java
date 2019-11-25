@@ -2,58 +2,52 @@ package com.dummytesting;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class Dummytesting{
+public class Dummytesting {
 
+       @Test
+        public void givenMessage_WhenSad_Should_Return_Sad() {
+            RealMoodAnalyser moodAnalyzer = new RealMoodAnalyser(null);
+            try {
+                Assert.assertEquals("SAD", moodAnalyzer.checkMood("THIS IS SAD MESSAGE"));
+            } catch (MoodAnalysisExpection e) {
+                e.printStackTrace();
+            }
 
+        }
 
-    @Test
-    public void givenMessage_WhenSad_ShouldReturnSad() {
-      MoodAnalyser moodAnalyser =new MoodAnalyser();
-      try {
-             String mood = moodAnalyser.analyseMood("This is a sad message");
-             Assert.assertEquals("SAD", mood);
-          }
-      catch(NullPointerException | MoodAnalysisExpection e)
-          {
-          }
+        @Test
+        public void givenMessage_WhenHappy_Should_Return_Happy() {
+            RealMoodAnalyser moodAnalyzer = new RealMoodAnalyser(null);
+            try {
+                Assert.assertEquals("HAPPY", moodAnalyzer.checkMood("THIS IS HAPPY MESSAGE"));
+            } catch (MoodAnalysisExpection e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Test
+        public void givenMessage_WhenNull_Should_Return_Happy() {
+            RealMoodAnalyser moodAnalyzer = new RealMoodAnalyser(null);
+            try {
+                moodAnalyzer.checkMood(null);
+            } catch (MoodAnalysisExpection e) {
+                e.printStackTrace();
+                Assert.assertEquals("Please enter proper mood", e.getMessage());
+            }
+
+        }
+
+        @Test
+        public void givenMessage_WhenProper_Should_Return_Object() {
+            RealMoodAnalyser moodAnalyzer = MoodAnalyserFactory.createMoodAnalyzer("I am in Happy Mood");
+            try {
+                String mood = moodAnalyzer.checkMood();
+          Assert.assertEquals("HAPPY", mood);
+            } catch (MoodAnalysisExpection e) {
+                e.printStackTrace();
+            }
+
+        }
     }
-    @Test
-    public void  givenMessage_WhenHappy_ShouldReturnHappy(){
-        MoodAnalyser moodAnalyser =new MoodAnalyser();
-        try {
-            String mood = MoodAnalyser.analyseMood("This is a happy message");
-            Assert.assertEquals("Happy", mood);
-            }
-        catch(NullPointerException | MoodAnalysisExpection e )
-            {
-            }
-    }
-    @Test
-
-    public void giveHappyWhenNull() {
-        MoodAnalyser moodanalyse = new MoodAnalyser();
-        try{
-            String mood=moodanalyse.analyseMood(null);
-            Assert.assertEquals("Happy",mood);
-            }
-        catch (NullPointerException | MoodAnalysisExpection e)
-            {
-            }
-
-    }
-    @Test
-    public void giveMessagewhenNull()
-    {
-        MoodAnalyser moodanalyse = new MoodAnalyser();
-        try{
-            moodanalyse.analyseMood(null);
-            }
-        catch(MoodAnalysisExpection e)
-            {
-            Assert.assertEquals("Please enter proper name",e.getMessage());
-            }
-
-    }
-}
