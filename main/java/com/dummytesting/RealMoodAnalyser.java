@@ -8,9 +8,10 @@ public class RealMoodAnalyser {
     }
 
     public String checkMood(String message) throws MoodAnalysisExpection {
-        this.message=message;
+        this.message = message;
         return checkMood();
     }
+
     public String checkMood() throws MoodAnalysisExpection {
         try {
             if (message.contains("SAD")) {
@@ -23,3 +24,4 @@ public class RealMoodAnalyser {
         }
     }
 }
+

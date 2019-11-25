@@ -3,7 +3,7 @@ package com.dummytesting;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Dummytesting {
+public class Dummytesting    {
 
        @Test
         public void givenMessage_WhenSad_Should_Return_Sad() {
@@ -30,8 +30,8 @@ public class Dummytesting {
         @Test
         public void givenMessage_WhenNull_Should_Return_Happy() {
             RealMoodAnalyser moodAnalyzer = new RealMoodAnalyser(null);
-            try {
-                moodAnalyzer.checkMood(null);
+            try
+            {  moodAnalyzer.checkMood(null);
             } catch (MoodAnalysisExpection e) {
                 e.printStackTrace();
                 Assert.assertEquals("Please enter proper mood", e.getMessage());
@@ -50,4 +50,11 @@ public class Dummytesting {
             }
 
         }
-    }
+        @Test
+
+     public void givenmessageforobjectDebugging() {
+
+            RealMoodAnalyser moodAnalyzer = new RealMoodAnalyser(null);
+            ObjectReflection.dump(moodAnalyzer,3);
+        }
+}
