@@ -34,22 +34,50 @@ public class Dummytesting    {
             {  moodAnalyzer.checkMood(null);
             } catch (MoodAnalysisExpection e) {
                 e.printStackTrace();
-                Assert.assertEquals("Please enter proper mood", e.getMessage());
+                Assert.assertEquals(MoodAnalysisExpection.Exceptiontype.ENTERED_NULL,e.type);
             }
 
         }
 
         @Test
         public void givenMessage_WhenProper_Should_Return_Object() {
-            RealMoodAnalyser moodAnalyzer = MoodAnalyserFactory.createMoodAnalyzer("I am in Happy Mood");
+            RealMoodAnalyser moodAnalyzer = MoodAnalyserReflector.createMoodAnalyzer("I am in Happy Mood");
             try {
                 String mood = moodAnalyzer.checkMood();
           Assert.assertEquals("HAPPY", mood);
             } catch (MoodAnalysisExpection e) {
                 e.printStackTrace();
             }
-
         }
+
+    @Test
+    public void givenMoodAnalyser_onChangeMood_ShouldReturnHappy() {
+           try{
+         Object myObject = MoodAnalyserReflector.createMoodAnalyzer("");
+             MoodAnalyserReflector.setFieldValue(myObject,"message","i am in happy Mood");
+               Object mood = MoodAnalyserReflector.invokeMethod(myObject, "checkMood");
+               Assert.assertEquals("HAPPY",mood);
+
+        } catch (MoodAnalysisExpection e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+        public void givenHappymessage_With_Reflecftion_shouldreturnHappy () {
+        try {
+            Object myObject = MoodAnalyserReflector.createMoodAnalyzer("I am in Happy Mood");
+            Object mood = MoodAnalyserReflector.invokeMethod(myObject, "checkMood");
+            Assert.assertEquals("HAPPY", mood);
+        } catch (MoodAnalysisExpection e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
         @Test
 
      public void givenmessageforobjectDebugging() {
