@@ -27,5 +27,10 @@ public class RealMoodAnalyser {
             throw new MoodAnalysisExpection(ENTERED_NULL,"Please enter proper mood");
         }
     }
+    public boolean equals(Object another) {
+        if (another instanceof RealMoodAnalyser )
+            return true;
+        return false;
+    }
 }
 
