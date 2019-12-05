@@ -1,22 +1,29 @@
 package com.dummytesting.com;
 
 import com.google.gson.Gson;
+
 import java.io.*;
 import java.util.*;
+
 public class AddressBook implements AdressBookInterface {
-    public String SAMPLE_JSON_FILE_PATH = "/home/user/Documents/adressBook.json";
+    
+//        public String SAMPLE_JSON_FILE_PATH = "/home/user/Documents/adressBook.json";
+//        String pathname = "/home/user/Documents/";
+//        Gson gson = new Gson();
+//        BufferedReader br;
+//        {
+//            try {
+//                br = new BufferedReader(new FileReader("/home/user/Documents/adressBook.json"));
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        AdressBookPojo[] adressBookPojo1 = gson.fromJson(br, AdressBookPojo[].class); 
+            List list = new ArrayList();
+            String pathname = "/home/user/Documents/";
+            String SAMPLE_JSON_FILE_PATH = "/home/user/Documents/adressBook.json";
+    
     AdressBookPojo adressBookPojo = new AdressBookPojo();
-    Gson gson = new Gson();
-    BufferedReader br;
-    {
-        try {
-            br = new BufferedReader(new FileReader("/home/user/Documents/adressBook.json"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-    AdressBookPojo[] adressBookPojo1 = gson.fromJson(br, AdressBookPojo[].class);
-    List list = new ArrayList();
     @Override
     public void createNewAdressBook(String SrNo, String firstName, String lastName, String address, String city, String zip, String phoneNumber) throws IOException {
         adressBookPojo.setSrno(SrNo);
@@ -31,9 +38,11 @@ public class AddressBook implements AdressBookInterface {
         list.add(adressBookPojo);
         writeToJson(list);
     }
-    public void editInformation(String SrNo, String OldValue, String NewValue) throws FileNotFoundException {
+
+    @Override
+    public void editInformation(String SrNo, String OldValue, String NewValue) {
         Boolean flag = false;
-        readFromJson();
+        AdressBookPojo[] adressBookPojo1 = readFromJson();
         printFromJson();
         System.out.println("enter options to edit");
         for (int i = 0; i < adressBookPojo1.length; i++) {
@@ -68,9 +77,12 @@ public class AddressBook implements AdressBookInterface {
         }
         printFromJson();
     }
-    private void printFromJson() {
+
+    @Override
+    public void printFromJson() {
+        AdressBookPojo[] adressBookPojo1 = readFromJson();
         for (int i = 0; i < list.size(); i++) {
-            System.out.println("SRnO            " + list.get(i));
+
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println("SrNo        " + adressBookPojo1[i].getSrno());
             System.out.println("firstname   " + adressBookPojo1[i].getFirstName());
@@ -81,12 +93,28 @@ public class AddressBook implements AdressBookInterface {
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
     }
-    private void readFromJson() {
-        for (int i = 0; i < adressBookPojo1.length; i++) {
-            list.add(adressBookPojo1[i]);
+
+    @Override
+    public AdressBookPojo[] readFromJson() {
+        Gson gson = new Gson();
+        BufferedReader br = null;
+        {
+            try {
+                br = new BufferedReader(new FileReader("/home/user/Documents/adressBook.json"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            AdressBookPojo[] adressBookPojo1 = gson.fromJson(br, AdressBookPojo[].class);
+            List list = new ArrayList();
+            for (int i = 0; i < adressBookPojo1.length; i++) {
+                list.add(adressBookPojo1[i]);
+            }
+            return adressBookPojo1;
         }
     }
-    private void writeToJson(List list) throws IOException {
+
+    @Override
+    public void writeToJson(List list) throws IOException {
         System.out.println(this.list);
         Gson gson = new Gson();
         String json = gson.toJson(this.list);
@@ -94,8 +122,20 @@ public class AddressBook implements AdressBookInterface {
         writer.write(json);
         writer.close();
     }
+
+    @Override
+    public void writeToJson1(List list, String SAMPLE_JSON_FILE_PATH1) throws IOException {
+        System.out.println(this.list);
+        Gson gson = new Gson();
+        String json = gson.toJson(this.list);
+        FileWriter writer = new FileWriter(SAMPLE_JSON_FILE_PATH1);
+        writer.write(json);
+        writer.close();
+    }
+
     public void deleteInformation(String SrNo) throws IOException {
         System.out.println(SrNo);
+        AdressBookPojo[] adressBookPojo1 = readFromJson();
         for (int i = 0; i < adressBookPojo1.length; i++) {
             String abc = adressBookPojo1[i].getSrno();
             System.out.println(adressBookPojo1[i].getAddress());
@@ -107,7 +147,9 @@ public class AddressBook implements AdressBookInterface {
         writeToJson(list);
         printFromJson();
     }
+
     public void sortInformation() throws IOException {
+        AdressBookPojo[] adressBookPojo1= readFromJson();
         for (int i = 0; i < adressBookPojo1.length; i++) {
             list.add(adressBookPojo1[i]);
         }
@@ -116,7 +158,9 @@ public class AddressBook implements AdressBookInterface {
         System.out.println(list);
         writeToJson(list);
     }
+
     public void sortInformationByZipCode() throws IOException {
+        AdressBookPojo[] adressBookPojo1 = readFromJson();
         for (int i = 0; i < adressBookPojo1.length; i++) {
             list.add(adressBookPojo1[i]);
         }
@@ -124,5 +168,33 @@ public class AddressBook implements AdressBookInterface {
         list.sort(comparing);
         System.out.println(list);
         writeToJson(list);
+    }
+
+    public void openNewFileOfAdressBook(String filename) throws IOException {
+        String path = pathname + filename + ".json";
+        File f = new File(path);
+        if (f.exists()) {
+            System.out.println("File available");
+        } else if (!f.exists()) {
+            f.createNewFile();
+            writeToJson1(list, path);
+            System.out.println(list);
+        }
+    }
+
+    public void openExistInFileFromJson(String fileName) throws IOException {
+        String path = pathname + fileName + ".json";
+        File file = new File(path);
+        if (file.exists()) {
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            if (br.readLine() != null) {
+                printFromJson();
+                System.out.println();
+            } else {
+                System.out.println("File is empty");
+            }
+            br.close();
+        }
     }
 }
