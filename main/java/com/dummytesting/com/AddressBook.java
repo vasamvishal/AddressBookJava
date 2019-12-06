@@ -6,26 +6,28 @@ import java.io.*;
 import java.util.*;
 
 public class AddressBook implements AdressBookInterface {
-    
-//        public String SAMPLE_JSON_FILE_PATH = "/home/user/Documents/adressBook.json";
-//        String pathname = "/home/user/Documents/";
-//        Gson gson = new Gson();
-//        BufferedReader br;
-//        {
-//            try {
-//                br = new BufferedReader(new FileReader("/home/user/Documents/adressBook.json"));
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        AdressBookPojo[] adressBookPojo1 = gson.fromJson(br, AdressBookPojo[].class); 
-            List list = new ArrayList();
-            String pathname = "/home/user/Documents/";
-            String SAMPLE_JSON_FILE_PATH = "/home/user/Documents/adressBook.json";
-    
+    private String filename;
+    private String path;
+    String pathname = "/home/user/Documents/jsonFiles/";
+    AdressBookPojo[] adressBookPojo1;
+
+    List list = new ArrayList();
     AdressBookPojo adressBookPojo = new AdressBookPojo();
+
+    public AddressBook() {
+    }
+
+    public AddressBook(String filename) {
+        this.filename = filename;
+        this.path = pathname + filename + ".json";
+    }
+
     @Override
-    public void createNewAdressBook(String SrNo, String firstName, String lastName, String address, String city, String zip, String phoneNumber) throws IOException {
+    public boolean addToAddressBook(String SrNo, String firstName, String lastName, String address, String city, String zip, String phoneNumber) throws AdressBookException {
+
+        System.out.println(this.path);
+        openNewFileOfAdressBook(filename);
+        System.out.println(path);
         adressBookPojo.setSrno(SrNo);
         adressBookPojo.setAddress(address);
         adressBookPojo.setFirstName(firstName);
@@ -34,17 +36,20 @@ public class AddressBook implements AdressBookInterface {
         adressBookPojo.setAddress(address);
         adressBookPojo.setPhoneNumber(phoneNumber);
         adressBookPojo.setZip(zip);
-        readFromJson();
+        AdressBookPojo[] adressBookPojo1 = readFromJson(path);
         list.add(adressBookPojo);
-        writeToJson(list);
+        System.out.println(list);
+        return true;
+
     }
 
     @Override
-    public void editInformation(String SrNo, String OldValue, String NewValue) {
+    public void editInformation(String SrNo, String OldValue, String NewValue) throws AdressBookException {
+        System.out.println(path);
+        openNewFileOfAdressBook(filename);
         Boolean flag = false;
-        AdressBookPojo[] adressBookPojo1 = readFromJson();
-        printFromJson();
-        System.out.println("enter options to edit");
+        AdressBookPojo[] adressBookPojo1 = readFromJson(path);
+        printFromJson(adressBookPojo1);
         for (int i = 0; i < adressBookPojo1.length; i++) {
             if (adressBookPojo1[i].getSrno().equals(SrNo)) {
                 if (adressBookPojo1[i].getFirstName().equals(OldValue)) {
@@ -75,14 +80,14 @@ public class AddressBook implements AdressBookInterface {
                 }
             }
         }
-        printFromJson();
+        printFromJson(adressBookPojo1);
     }
 
     @Override
-    public void printFromJson() {
-        AdressBookPojo[] adressBookPojo1 = readFromJson();
-        for (int i = 0; i < list.size(); i++) {
-
+    public void printFromJson(AdressBookPojo[] adressBookPojo1) throws AdressBookException {
+        for (int i = 0; i < adressBookPojo1.length; i++) {
+            System.out.println(list.size());
+            System.out.println(adressBookPojo1.length);
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println("SrNo        " + adressBookPojo1[i].getSrno());
             System.out.println("firstname   " + adressBookPojo1[i].getFirstName());
@@ -95,47 +100,45 @@ public class AddressBook implements AdressBookInterface {
     }
 
     @Override
-    public AdressBookPojo[] readFromJson() {
+    public AdressBookPojo[] readFromJson(String path) {
         Gson gson = new Gson();
         BufferedReader br = null;
         {
             try {
-                br = new BufferedReader(new FileReader("/home/user/Documents/adressBook.json"));
+                System.out.println(path);
+                br = new BufferedReader(new FileReader(path));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+            System.out.println(br);
             AdressBookPojo[] adressBookPojo1 = gson.fromJson(br, AdressBookPojo[].class);
-            List list = new ArrayList();
+            System.out.println();
+            System.out.println(adressBookPojo1.length);
             for (int i = 0; i < adressBookPojo1.length; i++) {
                 list.add(adressBookPojo1[i]);
             }
+            System.out.println(list);
             return adressBookPojo1;
         }
     }
 
     @Override
-    public void writeToJson(List list) throws IOException {
-        System.out.println(this.list);
-        Gson gson = new Gson();
-        String json = gson.toJson(this.list);
-        FileWriter writer = new FileWriter(SAMPLE_JSON_FILE_PATH);
-        writer.write(json);
-        writer.close();
+    public void writeToJson(String SAMPLE_JSON_FILE_PATH1) throws AdressBookException {
+        try {
+            System.out.println(this.list);
+            Gson gson = new Gson();
+            String json = gson.toJson(this.list);
+            FileWriter writer = new FileWriter(SAMPLE_JSON_FILE_PATH1);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            throw new AdressBookException("Please enter proper file", AdressBookException.ExceptionType.NO_SUCHFILE);
+        }
     }
 
-    @Override
-    public void writeToJson1(List list, String SAMPLE_JSON_FILE_PATH1) throws IOException {
-        System.out.println(this.list);
-        Gson gson = new Gson();
-        String json = gson.toJson(this.list);
-        FileWriter writer = new FileWriter(SAMPLE_JSON_FILE_PATH1);
-        writer.write(json);
-        writer.close();
-    }
-
-    public void deleteInformation(String SrNo) throws IOException {
+    public void deleteInformation(String SrNo) throws IOException, AdressBookException {
         System.out.println(SrNo);
-        AdressBookPojo[] adressBookPojo1 = readFromJson();
+        AdressBookPojo[] adressBookPojo1 = readFromJson(path);
         for (int i = 0; i < adressBookPojo1.length; i++) {
             String abc = adressBookPojo1[i].getSrno();
             System.out.println(adressBookPojo1[i].getAddress());
@@ -144,57 +147,81 @@ public class AddressBook implements AdressBookInterface {
             }
         }
         System.out.println(list);
-        writeToJson(list);
-        printFromJson();
+        printFromJson(adressBookPojo1);
     }
 
-    public void sortInformation() throws IOException {
-        AdressBookPojo[] adressBookPojo1= readFromJson();
+    public void sortInformationByLastName() throws AdressBookException {
+        AdressBookPojo[] adressBookPojo1 = readFromJson(path);
         for (int i = 0; i < adressBookPojo1.length; i++) {
             list.add(adressBookPojo1[i]);
         }
         Comparator comparing = Comparator.comparing(AdressBookPojo::getLastName);
         list.sort(comparing);
         System.out.println(list);
-        writeToJson(list);
+
     }
 
-    public void sortInformationByZipCode() throws IOException {
-        AdressBookPojo[] adressBookPojo1 = readFromJson();
+    public void sortInformationByZipCode() throws AdressBookException, IOException {
+        AdressBookPojo[] adressBookPojo1 = readFromJson(path);
         for (int i = 0; i < adressBookPojo1.length; i++) {
             list.add(adressBookPojo1[i]);
         }
         Comparator comparing = Comparator.comparing(AdressBookPojo::getZip);
         list.sort(comparing);
         System.out.println(list);
-        writeToJson(list);
+        writeToJson(path);
+        printFromJson(adressBookPojo1);
     }
 
-    public void openNewFileOfAdressBook(String filename) throws IOException {
-        String path = pathname + filename + ".json";
-        File f = new File(path);
-        if (f.exists()) {
-            System.out.println("File available");
-        } else if (!f.exists()) {
-            f.createNewFile();
-            writeToJson1(list, path);
-            System.out.println(list);
+    public void openNewFileOfAdressBook(String path) throws AdressBookException {
+        try {
+            String newFileName = pathname + path + ".json";
+            File f = new File(newFileName);
+            if (f.exists()) {
+                System.out.println("File available");
+            } else if (!f.exists()) {
+                f.createNewFile();
+                System.out.println("New File Created");
+                System.out.println("1 for writing to file ");
+                writeToJson(newFileName);
+                System.out.println(list);
+            }
+
+        } catch (IOException e) {
+            throw new AdressBookException("Please enter proper file", AdressBookException.ExceptionType.NO_SUCHFILE);
         }
     }
-
-    public void openExistInFileFromJson(String fileName) throws IOException {
-        String path = pathname + fileName + ".json";
-        File file = new File(path);
-        if (file.exists()) {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-            if (br.readLine() != null) {
-                printFromJson();
-                System.out.println();
-            } else {
-                System.out.println("File is empty");
+    public void existingFilesOfJson(){
+        File tmpDir = new File(pathname);
+        if(tmpDir.exists() == true)
+        {
+            String[] files = tmpDir.list();
+            for (String file : files)
+            {
+                System.out.println(file);
             }
-            br.close();
+        }
+        }
+    public void openExistInFileFromJson(String fileName) throws AdressBookException {
+        filename = pathname + filename + ".json";
+        try {
+            File file = new File(fileName);
+            if (file.exists()) {
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+                if (br.readLine() != null) {
+                    printFromJson(adressBookPojo1);
+                    System.out.println();
+                } else {
+                    System.out.println("File is empty");
+                }
+                br.close();
+            }
+            if (!file.exists()) {
+                System.out.println("file not empty");
+            }
+        } catch (IOException e) {
+            throw new AdressBookException("Please enter proper file", AdressBookException.ExceptionType.NO_SUCHFILE);
         }
     }
 }
